@@ -1,0 +1,6 @@
+git branch -can see current branch
+git branch -M main/master -change branch
+git barnch -a -see all branch name in our current repository  
+git branch checkout gitbranch_1 -open newly created barnch
+git checkout main/master/gitbranch_1 -switched to branch 
+git diff gitbranch_1 -alrdy ulle branch kum gitbranch_1 kum ideile ulle differnt a paakelam
