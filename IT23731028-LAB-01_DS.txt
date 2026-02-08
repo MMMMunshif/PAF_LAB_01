@@ -1,0 +1,141 @@
+//DS_LAB_01
+//IT23731028
+
+CREATE TABLE client(
+  clno char(3) primary KEY,
+  name varchar(12),
+  address varchar(30)
+);
+ 
+select * from client; 
+select * from stock;
+select * from tranding; 
+
+CREATE TABLE stock(
+company char(7) primary KEY,
+  price NUMBER(6,2),
+  dividend NUMBER(4,2),
+  eps NUMBER(4,2)
+  );
+  
+  
+  CREATE TABLE trading(
+company char(7), 
+exchange VARCHAR(12),
+    FOREIGN key (company) REFERENCES stock(company)
+
+  );
+  
+  CREATE TABLE purchase(
+    clno char(3),
+    company char(7),
+    pdate DATE,
+    qty NUMBER(6),
+    price NUMBER(6,2),
+    FOREIGN KEY (clno) REFERENCES client(clno),
+    FOREIGN KEY (company) REFERENCES stock(company)
+    );
+    
+    
+    
+    
+    
+    //client
+    INSERT INTO CLIENT VALUES('c01','john smithy','3 east av bently wa 6102');
+    INSERT INTO CLIENT VALUES('c02','jilly brody','78 balapokuna road col-06');
+    
+	// stock
+    INSERT into stock VALUES('BHP',10.50,1.50,3.20);
+    INSERT into stock VALUES('IBM',70.00,4.25,10.00);
+    INSERT into stock VALUES('INTEL',76.50,5.00,12.40);
+    INSERT into stock VALUES('FORD',40.00,2.00,8.50);
+    INSERT into stock VALUES('GM',60.00,2.50,9.20);
+    INSERT into stock VALUES('INFOSYS',45.00,3.00,7.80);
+    
+    //trading
+    INSERT INTO trading VALUES('BHP','SYDNEY');
+     INSERT INTO trading VALUES('BHP','NEW YORK');
+     INSERT INTO trading VALUES('IBM','NEW YORK');
+     INSERT INTO trading VALUES('IBM','London');
+     INSERT INTO trading VALUES('IBM','Tokyo');
+     INSERT INTO trading VALUES('INTEL','NEW YORK');
+     INSERT INTO trading VALUES('INTEL','London');
+      INSERT INTO trading VALUES('FORD','NEW YORK');
+     INSERT INTO trading VALUES('GM','NEW YORK'); 
+    INSERT INTO trading VALUES('INFOSYS','NEW YORK'); 
+    
+    //purchase
+    INSERT into purchase VALUES ('c01','BHP', '2001-10-02',1000,12.00);
+    INSERT into purchase VALUES ('c01','IBM','2000-02-12',500,58.00);
+    INSERT into purchase VALUES ('c02','INTEL','2000-02-12',300,35.00);
+    
+    
+    
+      
+ a)
+   
+    SELECT c.name,s.company,s.price,s.dividend,s.eps
+    FROM client c
+    JOIN purchase p ON c.clno=P.clno
+    JOIN stock s ON P.company=S.company;
+	
+	OR
+	
+	SELECT c.name,s.company,s.price,s.dividend,s.eps
+    FROM client c purchase p stock s
+    WHERE c.clno=p.clno and s.company=p.company
+ 
+
+b)
+   
+    SELECT c.name, p.company,  
+    SUM(p.qty) AS total_shares,
+    SUM(p.qty*p.price)/SUM(p.qty) AS avg_purchase_price
+    FROM client c purchase p,
+    WHERE c.clno = p.clno,
+    GROUP BY c.name, p.company;
+	
+	OR
+	
+	SELECT c.name, p.company,  
+    SUM(p.qty) AS total_shares,
+    AVG(p.price) AS avg_price
+	FROM client c purchase p
+    WHERE c.clno = p.clno
+    GROUP BY c.name, p.company;
+
+c)
+
+    SELECT s.company, c.name, SUM(p.qty) AS no_of_shares,
+    SUM(p.qty * s.price) AS current_value
+    FROM stock s
+    JOIN trading t ON s.company = t.company
+    JOIN purchase p ON s.company = p.company
+    JOIN client c ON p.clno = c.clno
+    WHERE t.exchange = 'New York'
+    GROUP BY s.company, c.name;
+
+	OR
+
+	FROM client c, stock s,trading t,purchase p
+	WHERE c.clno=p.clno
+	AND p.company=s.company 
+	AND s.company=t.company
+	
+d)
+
+    SELECT c.name,
+    SUM(p.qty * p.price) AS total_purchase
+    FROM client c
+    JOIN purchase p ON c.clno = p.clno
+    GROUP BY c.name;
+
+e)
+
+   SELECT c.name,
+   SUM(p.qty * s.price) - SUM(p.qty * p.price) AS book_profit
+   FROM client c
+   JOIN purchase p ON c.clno = p.clno
+   JOIN stock s ON p.company = s.company
+   GROUP BY c.name;
+  
